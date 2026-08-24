@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>YUNUCMS安装向导</title>
+<link href="__INSTALL__/css/base.css" rel="stylesheet" type="text/css" />
+<link href="__INSTALL__/css/style.css" rel="stylesheet" type="text/css" />
+<script src="__INSTALL__/js/install.js"></script>
+</head>
+<body>
+<div class="g-install">
+  <div class="m-head">
+    <h1>YUNUCMS账号验证</h1>
+  </div>
+  <form action="/index.php?s=index/install/setup3" method="post">
+  <div class="m-body">
+    <div class="tt"></div>
+    <div class="m-form">
+      
+        <div class="formitm">
+          <label class="lab">云平台账号：</label>
+          <div class="ipt">
+            <input type="text" class="u-element" name="username" id="username" value="" />
+          </div>
+        </div>
+        <div class="formitm">
+          <label class="lab">云平台密码：</label>
+          <div class="ipt">
+            <input type="password" class="u-element" name="password" id="password" value="" />
+          </div>
+        </div>
+        <div class="setuptxt">
+          如果您还未在云优官网注册账号，请 <a href="http://www.yunucms.com/index/index/is_register/1?domain={$_SERVER["SERVER_NAME"]}" target="_blank">点击注册</a> 。如果您已注册账号，请填写信息进行下一步安装操作。
+        </div>
+
+    </div>
+  </div>
+  <div class="m-foot"> 
+  	<a href="/index.php?s=index/install/setup1">上一步</a>
+    <button type="submit" class="submit">下一步</button>
+  </div>
+  </form>
+</div>
+</body>
+</html>

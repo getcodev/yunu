@@ -1,0 +1,125 @@
+{include file="public/header" /}
+</head>
+<body>
+	<div id="main-container">
+		{include file="public/menu" /}
+		<div class="main">
+			<div class="notice">{$position.url}</div>
+			<div class="main_content">
+				<div class="title">
+					<span>{$position.name}</span>
+				</div>
+				<form  class="layui-form layui-form-pane" id="formrec" method="post" role="form">
+
+					<div class="layui-form-item">
+			            <label class="layui-form-label">是否开启</label>
+			            <div class="layui-input-inline" style="width:100px;">
+			                <input type="checkbox" {if config('sys.disablewords_status') eq 1}checked{/if} name="disablewords_status" lay-skin="switch" lay-filter="switchTest">
+			            </div>
+			            <font class="font_tip">开启后，内容文字将按以下信息替换，每行一个词组，如果逗号后面不填，正文则替换为空，如果填写，则替换成对应词组</font>
+			        </div>
+
+			        <div class="layui-form-item disablewords {if config('sys.disablewords_status') neq 1}none{/if}">
+			            <label class="layui-form-label">禁用词</label>
+			            <div class="layui-input-inline">
+			                <textarea class="layui-textarea w450" name="disablewords_content" rows="20">{:config('sys.disablewords_content')}</textarea>
+                            {if !$isagent}
+                            <font class="font_tip">注：最新广告法禁用词 [<a href="http://www.yunucms.com/Article/show/id/189.html" target="_blank">点击获取</a>]</font>
+                            {/if}
+			            </div> 
+
+			        </div>
+			   
+					<div class="layui-form-item">
+	                    <label class="layui-form-label"></label>
+	                    <div class="layui-input-inline">
+			              	<button class="btn" lay-submit="" lay-filter="save" data-href='{:url('disablewords')}'>提交</button>&nbsp;&nbsp;
+                            <button class="btn disablewords editcontent {if config('sys.disablewords_status') neq 1}none{/if}">更新已有数据</button>
+	                    </div>
+			        </div>
+				</form>
+			</div>
+		</div>
+	</div>
+<script>
+layui.use(['form','common'], function(){
+        var $ = layui.jquery;
+        $form = $('form');
+        var form = layui.form(),layer = layui.layer,common=layui.common;
+
+        //监听提交
+        form.on('submit(save)', function(data){
+            var sub = true;
+            var url = $(this).data('href');
+            if(url){
+                if(sub){
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: data.field,
+                        success: function (info) {
+                            if (info.code == 1) {
+                                common.layerAlertSHref(info.msg, '提示', "{:url('system/disablewords')}");
+                            }
+                            else {
+                                common.layerAlertE(info.msg, '提示');
+                                $(data.elem).removeAttr("disabled").text("提交");
+                            }
+                        },
+                        beforeSend: function () {
+                            $(data.elem).attr("disabled", "true").text("提交中...");
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            common.layerAlertE(textStatus, '提示');
+                        }
+                    });
+                }
+            }else{
+                common.layerAlertE('链接错误！', '提示');
+            }
+            return false;
+        });
+
+        $(document).on('click','.editcontent', function () {
+            $.ajax({
+                url: '{:url('content/disablewordscount')}',
+                type: 'post',
+                dataType: 'json',
+                success: function (info) {
+                    if (info.code == 1) {
+                        layer.confirm("此次更新已有内容预计需要："+info.time+"，请关闭您的系统防火墙再执行，否则您的IP可能会被防火墙拦截!", {
+                            title: "更新提示",
+                            btnAlign: 'c',
+                            resize: false,
+                            icon: 3,
+                            btn: ['确定更新', '我再想想'],
+                            yes: function () {
+                                layer.close(layer.index);
+                                statichtmlup();
+                            }
+                        });
+                    }else {
+                        common.layerAlertE(info.msg, '提示');
+                    }
+                }
+            });
+            return false;
+        });
+        function statichtmlup(){
+            var url = "{:url('content/disablewordsshow')}";
+            var index = layer.open({type: 2,title: '开始更新',area: ['500px', '180px'],fix: false, maxmin: false,content: url});
+            return;
+        }
+
+        form.on('switch(switchTest)', function(data) {
+        	if (this.checked) {
+        		$(".disablewords").show();
+        	}else{
+        		$(".disablewords").hide();
+        	}
+        });
+    });
+</script>
+</body>
+</html>
